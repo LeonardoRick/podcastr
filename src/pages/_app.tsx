@@ -1,11 +1,11 @@
-import '../styles/globals.scss'
+import 'Styles/globals.scss';
+import { Header } from 'Components/Header';
+import { Player } from 'Components/Player';
 
-import { Header } from '../components/Header'
-import { Player } from '../components/Player';
+import styles from 'Styles/app.module.scss';
+import { AppProps } from 'next/app';
 
-import styles from '../styles/app.module.scss'
-
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   return (
     <div className={styles.wrapper}>
       <main>
@@ -14,7 +14,7 @@ function MyApp({ Component, pageProps }) {
       </main>
       <Player />
     </div>
-  )
+  );
 }
 
-export default MyApp
+export default MyApp;
