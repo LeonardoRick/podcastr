@@ -1,11 +1,14 @@
 import { GetStaticProps } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useContext } from 'react';
+
 import { IEpisodesResponse } from 'Models/episodes.response.model';
 import { api } from 'Services/api';
 import { IEpisode } from 'Models/episode.model';
 import styles from 'pages/home.module.scss';
 import { convertResponseToEpisodeList } from 'Utils/convertResponseToEpisodeList';
+import { PlayerContext } from 'Contexts/PlayerContext';
 
 interface HomeProps {
   latestEpisodes: IEpisode[];
@@ -13,6 +16,7 @@ interface HomeProps {
 }
 
 export default function Home({ latestEpisodes, remainEpisodes }: HomeProps): JSX.Element {
+  const { play } = useContext(PlayerContext);
   return (
     <div className={`${styles.homepage} px-16 overflow-y-scroll`}>
       <section className={styles.latestEpisodes}>
@@ -20,7 +24,14 @@ export default function Home({ latestEpisodes, remainEpisodes }: HomeProps): JSX
         <ul className="list-none grid grid-cols-2 gap-6">
           {latestEpisodes.map(episode => (
             <li className="bg-white border border-solid border-gray-100 p-5 rounded-3xl relative flex items-center" key={episode.id}>
-              <Image className={styles.imageWrapper} width={192} height={192} objectFit="cover" src={episode.thumbnail} alt={episode.title} />
+              <Image
+                className={styles.imageWrapper}
+                width={192}
+                height={192}
+                objectFit="cover"
+                src={episode.thumbnail}
+                alt={episode.title}
+              />
 
               <div className={`${styles.details} flex-1 ml-4`}>
                 <Link href={`/episodes/${episode.id}`}>
@@ -30,8 +41,10 @@ export default function Home({ latestEpisodes, remainEpisodes }: HomeProps): JSX
                 <span>{episode.publishedAt}</span>
                 <span>{episode.durationAsString}</span>
               </div>
+
               <button
                 type="button"
+                onClick={() => play(episode)}
                 className={`${styles.playButton} absolute right-8 bottom-8 w-10 h-10 bg-white border border-solid border-gray-100 rounded-lg flex items-center justify-center`}
               >
                 <img className="h-6 w-6" src="img/play-green.svg" alt="Tocar episódio" />

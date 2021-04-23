@@ -15,9 +15,7 @@ module.exports = {
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
-    },
+    ecmaFeatures: { jsx: true, },
     ecmaVersion: 12,
     sourceType: 'module',
     // https://github.com/iamturns/eslint-config-airbnb-typescript/issues/68#issuecomment-585623820
@@ -54,9 +52,33 @@ module.exports = {
     // todo: date-fns dependency: https://github.com/date-fns/date-fns/issues/1677
     'import/no-duplicates': 'off',
     'import/prefer-default-export': 'off',
-    'import/order': ['error', { groups: ['index', 'external', 'sibling', 'parent', 'internal', 'builtin', 'object'] }],
 
     // /*********************** ON *********************************'
+    // enforce line breaks between braces
+    // https://eslint.org/docs/rules/object-curly-newline
+    'object-curly-newline': ['error', {
+      ObjectExpression: { minProperties: 6, multiline: true, consistent: true },
+      ObjectPattern: { minProperties: 6, multiline: true, consistent: true },
+      ImportDeclaration: { minProperties: 6, multiline: true, consistent: true },
+      ExportDeclaration: { minProperties: 6, multiline: true, consistent: true },
+    }],
+
+    // enforces interface semicolumn
+    '@typescript-eslint/member-delimiter-style': [
+      'error',
+      {
+        multiline: {
+          delimiter: 'semi',
+          requireLast: true
+        },
+        singleline: {
+          delimiter: 'semi',
+          requireLast: false
+        }
+      }
+    ],
+
+    'import/order': ['error', { groups: ['index', 'external', 'sibling', 'parent', 'internal', 'builtin', 'object'] }],
 
     'import/extensions': [
       'error',
@@ -67,9 +89,5 @@ module.exports = {
       }
     ]
   },
-  settings: {
-    'import/resolver': {
-      typescript: {},
-    },
-  },
+  settings: { 'import/resolver': { typescript: {}, }, },
 };

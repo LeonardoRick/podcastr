@@ -6,6 +6,7 @@ import styles from './styles.module.scss';
 import { api } from 'Services/api';
 import { IEpisode } from 'Models/episode.model';
 import { convertResponseToEpisodeList } from 'Utils/convertResponseToEpisodeList';
+import { IEpisodesResponse } from 'Models/episodes.response.model';
 
 // https://github.com/vercel/next.js/discussions/16522
 interface Params extends ParsedUrlQuery {
@@ -13,7 +14,7 @@ interface Params extends ParsedUrlQuery {
 }
 
 interface EpisodeProps {
-  episode: IEpisode
+  episode: IEpisode;
 }
 
 export default function Episode({ episode }: EpisodeProps): JSX.Element {
@@ -44,10 +45,20 @@ export default function Episode({ episode }: EpisodeProps): JSX.Element {
   );
 }
 
-export const getStaticPaths: GetStaticPaths = async () => ({
-  paths: [],
-  fallback: 'blocking'
-});
+export const getStaticPaths: GetStaticPaths = async () => {
+  const { data }: IEpisodesResponse = await api.get('episodes', {
+    params: {
+      _limit: 2,
+      _sort: 'published_at',
+      _order: 'desc'
+    }
+  });
+
+  return {
+    paths: data.map(episode => ({ params: { slug: episode.id } })),
+    fallback: 'blocking'
+  };
+};
 
 export const getStaticProps: GetStaticProps = async (ctx) => {
   const { slug } = ctx.params as Params;

@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 // response interfaces should have cammel_case allowed
 export interface IEpisodesResponse {
-  data: IEpisodesResponseData[]
+  data: IEpisodesResponseData[];
 }
 
 export interface IEpisodesResponseData {
@@ -14,5 +14,5 @@ export interface IEpisodesResponseData {
   file: {
     url: string;
     duration: string;
-  }
+  };
 }
