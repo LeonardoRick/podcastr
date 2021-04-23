@@ -1,14 +1,14 @@
 import { GetStaticProps } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useContext } from 'react';
+import Head from 'next/head';
 
 import { IEpisodesResponse } from 'Models/episodes.response.model';
 import { api } from 'Services/api';
 import { IEpisode } from 'Models/episode.model';
 import styles from 'pages/home.module.scss';
 import { convertResponseToEpisodeList } from 'Utils/convertResponseToEpisodeList';
-import { PlayerContext } from 'Contexts/PlayerContext';
+import { usePlayer } from 'Contexts/PlayerContext';
 
 interface HomeProps {
   latestEpisodes: IEpisode[];
@@ -16,13 +16,20 @@ interface HomeProps {
 }
 
 export default function Home({ latestEpisodes, remainEpisodes }: HomeProps): JSX.Element {
-  const { play } = useContext(PlayerContext);
+  const { playList } = usePlayer();
+
+  const episodeList = [...latestEpisodes, ...remainEpisodes];
+
   return (
     <div className={`${styles.homepage} px-16 overflow-y-scroll`}>
+
+      <Head>
+        <title>Home | Podcastr</title>
+      </Head>
       <section className={styles.latestEpisodes}>
         <h2 className="mt-12 mb-6">Últimos lançamentos</h2>
         <ul className="list-none grid grid-cols-2 gap-6">
-          {latestEpisodes.map(episode => (
+          {latestEpisodes.map((episode, index) => (
             <li className="bg-white border border-solid border-gray-100 p-5 rounded-3xl relative flex items-center" key={episode.id}>
               <Image
                 className={styles.imageWrapper}
@@ -44,8 +51,9 @@ export default function Home({ latestEpisodes, remainEpisodes }: HomeProps): JSX
 
               <button
                 type="button"
-                onClick={() => play(episode)}
-                className={`${styles.playButton} absolute right-8 bottom-8 w-10 h-10 bg-white border border-solid border-gray-100 rounded-lg flex items-center justify-center`}
+                onClick={() => playList(episodeList, index)}
+                className={`${styles.playButton}
+                absolute right-8 bottom-8 w-10 h-10 bg-white border border-solid border-gray-100 rounded-lg flex items-center justify-center`}
               >
                 <img className="h-6 w-6" src="img/play-green.svg" alt="Tocar episódio" />
               </button>
@@ -67,7 +75,7 @@ export default function Home({ latestEpisodes, remainEpisodes }: HomeProps): JSX
             </tr>
           </thead>
           <tbody>
-            {remainEpisodes.map(episode => (
+            {remainEpisodes.map((episode, index) => (
               <tr key={episode.id}>
                 <td style={{ width: '72px' }}>
                   <Image src={episode.thumbnail} width={120} height={120} objectFit="cover" alt={episode.title} />
@@ -79,7 +87,12 @@ export default function Home({ latestEpisodes, remainEpisodes }: HomeProps): JSX
                 <td className="whitespace-nowrap text-center">{episode.publishedAt}</td>
                 <td>{episode.durationAsString}</td>
                 <td>
-                  <button className={`${styles.remainPlayButton} w-8 h-8 bg-white border border-solid border-gray-100 rounded-lg flex items-center justify-center`} type="button">
+                  <button
+                    onClick={() => playList(episodeList, index + latestEpisodes.length)}
+                    className={`${styles.remainPlayButton}
+                    w-8 h-8 bg-white border border-solid border-gray-100 rounded-lg flex items-center justify-center`}
+                    type="button"
+                  >
                     <img src="/img/play-green.svg" alt="Tocar episódio" />
                   </button>
                 </td>

@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import Head from 'next/head';
+
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { ParsedUrlQuery } from 'node:querystring';
 import styles from './styles.module.scss';
@@ -7,6 +9,7 @@ import { api } from 'Services/api';
 import { IEpisode } from 'Models/episode.model';
 import { convertResponseToEpisodeList } from 'Utils/convertResponseToEpisodeList';
 import { IEpisodesResponse } from 'Models/episodes.response.model';
+import { usePlayer } from 'Contexts/PlayerContext';
 
 // https://github.com/vercel/next.js/discussions/16522
 interface Params extends ParsedUrlQuery {
@@ -18,8 +21,14 @@ interface EpisodeProps {
 }
 
 export default function Episode({ episode }: EpisodeProps): JSX.Element {
+  const { play } = usePlayer();
+
   return (
     <div className={styles.episode}>
+      <Head>
+        <title>{`${episode.title} | Podcastr`}</title>
+      </Head>
+
       <div className={styles.thumbnailContainer}>
         <Link href="/">
           <button type="button">
@@ -28,7 +37,7 @@ export default function Episode({ episode }: EpisodeProps): JSX.Element {
         </Link>
 
         <Image width={700} height={160} objectFit="cover" src={episode.thumbnail} />
-        <button type="button">
+        <button onClick={() => play(episode)} type="button">
           <img src="/img/play.svg" alt="Tocar áudio" />
         </button>
       </div>
@@ -54,6 +63,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     }
   });
 
+  // ISR: Incremental Static Regeneration
   return {
     paths: data.map(episode => ({ params: { slug: episode.id } })),
     fallback: 'blocking'

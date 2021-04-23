@@ -40,7 +40,7 @@
     footer {
         align-self: stretch;
 
-        &.noSelection {
+        &.noSelection .progress {
             opacity: 0.5;
         }
 
@@ -89,7 +89,16 @@
                 }
 
                 &:disabled {
+                  opacity: 0.5;
                   cursor: default;
+                }
+
+                &.isActive {
+                  filter: invert(0.35) sepia(1) saturate(3) hue-rotate(100deg);
+
+                  &:hover {
+                    filter: brightness(0.6) invert(0.35) sepia(1) saturate(3) hue-rotate(100deg);;
+                  }
                 }
             }
         }

@@ -44,7 +44,7 @@ module.exports = {
     // allows a.map(b => b)
     'arrow-parens': 'off',
 
-    'max-len': ['error', { code: 180 }],
+    'max-len': ['error', { code: 150 }],
 
     // allow last line of objects to not have comma
     '@typescript-eslint/comma-dangle': 'off',
