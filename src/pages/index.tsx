@@ -1,24 +1,81 @@
-import ptBR from 'date-fns/locale/pt-BR';
-import { format, parseISO } from 'date-fns';
 import { GetStaticProps } from 'next';
-
+import Image from 'next/image';
+import Link from 'next/link';
+import { IEpisodesResponse } from 'Models/episodes.response.model';
 import { api } from 'Services/api';
-
-import { EpisodesResponse } from 'Models/episodes.response.model';
-import { Episode } from 'Models/episode.model';
-import { convertDurationToTimeString } from 'Utils/convertDurationToTimeString';
+import { IEpisode } from 'Models/episode.model';
+import styles from 'pages/home.module.scss';
+import { convertResponseToEpisodeList } from 'Utils/convertResponseToEpisodeList';
 
 interface HomeProps {
-  episodes: Episode[];
+  latestEpisodes: IEpisode[];
+  remainEpisodes: IEpisode[];
 }
 
-export default function Home(props: HomeProps): JSX.Element {
-  const { episodes } = props;
+export default function Home({ latestEpisodes, remainEpisodes }: HomeProps): JSX.Element {
   return (
-    <>
-      <h1>index</h1>
-      <p>{JSON.stringify(episodes)}</p>
-    </>
+    <div className={`${styles.homepage} px-16 overflow-y-scroll`}>
+      <section className={styles.latestEpisodes}>
+        <h2 className="mt-12 mb-6">Últimos lançamentos</h2>
+        <ul className="list-none grid grid-cols-2 gap-6">
+          {latestEpisodes.map(episode => (
+            <li className="bg-white border border-solid border-gray-100 p-5 rounded-3xl relative flex items-center" key={episode.id}>
+              <Image className={styles.imageWrapper} width={192} height={192} objectFit="cover" src={episode.thumbnail} alt={episode.title} />
+
+              <div className={`${styles.details} flex-1 ml-4`}>
+                <Link href={`/episodes/${episode.id}`}>
+                  <a className="block text-gray-800 font-Lexend font-semibold leading-5 hover:underline">{episode.title}</a>
+                </Link>
+                <p className="text-sm mt-2 overflow-hidden overflow-ellipsis">{episode.members}</p>
+                <span>{episode.publishedAt}</span>
+                <span>{episode.durationAsString}</span>
+              </div>
+              <button
+                type="button"
+                className={`${styles.playButton} absolute right-8 bottom-8 w-10 h-10 bg-white border border-solid border-gray-100 rounded-lg flex items-center justify-center`}
+              >
+                <img className="h-6 w-6" src="img/play-green.svg" alt="Tocar episódio" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      </section>
+      <section className={styles.remainEpisodes}>
+        <h2>Todos os episódios</h2>
+        <table cellSpacing={0}>
+          <thead className="text-left">
+            <tr>
+              <th> </th>
+              <th>Poadcast</th>
+              <th>Integrantes</th>
+              <th>Data</th>
+              <th>Duração</th>
+              <th> </th>
+            </tr>
+          </thead>
+          <tbody>
+            {remainEpisodes.map(episode => (
+              <tr key={episode.id}>
+                <td style={{ width: '72px' }}>
+                  <Image src={episode.thumbnail} width={120} height={120} objectFit="cover" alt={episode.title} />
+                </td>
+                <td>
+                  <Link href={`/episodes/${episode.id}`}><a>{episode.title}</a></Link>
+                </td>
+                <td>{episode.members}</td>
+                <td className="whitespace-nowrap text-center">{episode.publishedAt}</td>
+                <td>{episode.durationAsString}</td>
+                <td>
+                  <button className={`${styles.remainPlayButton} w-8 h-8 bg-white border border-solid border-gray-100 rounded-lg flex items-center justify-center`} type="button">
+                    <img src="/img/play-green.svg" alt="Tocar episódio" />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+    </div>
   );
 }
 
@@ -30,29 +87,22 @@ export const getStaticProps: GetStaticProps = async () => {
     params: {
       _limit: 12,
       _sort: 'published_at',
-      _order: 'desc'
+      _order: 'desc',
     },
-  }) as EpisodesResponse;
+  }) as IEpisodesResponse;
 
-  const episodes: Episode[] = data.map(episode => ({
-    id: episode.id,
-    title: episode.title,
-    thumbnail: episode.thumbnail,
-    members: episode.members,
-    // iso is to convert string to date
-    publishedAt: format(parseISO(episode.published_at), 'd MMM yy', { locale: ptBR }),
-    duration: Number(episode.file.duration),
-    durationAsString: convertDurationToTimeString(Number(episode.file.duration)),
-    description: episode.description,
-    url: episode.file.url
-  } as Episode));
+  const episodes: IEpisode[] = convertResponseToEpisodeList(data);
+
+  const latestEpisodes = episodes.slice(0, 2);
+  const remainEpisodes = episodes.slice(2, episodes.length);
   return {
     // props is a default key
     props: {
-      episodes,
-    },
+      latestEpisodes,
+      remainEpisodes,
+    } as HomeProps,
     // each 8 hours a new call is maded, otherwise, the static generated is
     // sent to every user
-    revalidate: 60 * 60 * 8 // seconds
+    revalidate: 60 * 60 * 8, // seconds
   };
 };

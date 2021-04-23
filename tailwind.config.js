@@ -2,8 +2,8 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     fontFamily: {
-      'Inter': ['Inter', 'sans-serif'],
-      'Lexend': ['Lexend', 'sans-serif']
+      Inter: ['Inter', 'sans-serif'],
+      Lexend: ['Lexend', 'sans-serif']
     },
     extend: {},
   },
@@ -11,4 +11,4 @@ module.exports = {
     extend: {},
   },
   plugins: [],
-}
+};
