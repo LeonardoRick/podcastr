@@ -1,3 +1,14 @@
+# DESCRIPTION OF PODCASTR APP
+---
+An app that serves as a podcast website, following react patterns using eslint and typescript. You can define a api that return a json with the `server.json` format and only update the base url on `api.ts`. The mock json is showing rocketseat podcasts.
+
+| Home Screen | Episode Screen|
+:------------:|:--------------:|
+![home_podcastr](https://user-images.githubusercontent.com/17517057/115971540-64e17b00-a51f-11eb-890d-d59bd6bdce2f.png)] |![episode_podcastr](https://user-images.githubusercontent.com/17517057/115971587-9f4b1800-a51f-11eb-9ffc-b167de296a4b.png)
+
+
+An app that allows 
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
@@ -16,6 +27,11 @@ npm run dev
 yarn dev
 ```
 
+Or build it with SSG!
+```bash
+yarn build
+yarn start
+```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
